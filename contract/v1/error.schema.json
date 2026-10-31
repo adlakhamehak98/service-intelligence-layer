@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sil:contract:v1:error",
+  "title": "SIL error response",
+  "description": "RFC 9457 Problem Details extended with the SIL fields.",
+  "type": "object",
+  "required": ["type", "title", "status", "errorCode", "category", "service", "transactionId", "timestamp"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "pattern": "^urn:sil:error:[A-Z]{2,6}-(VAL|ATN|ATZ|NFD|CON|RTL|DEP|TMO|INT)-[0-9]{4}$"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "status": { "type": "integer", "minimum": 400, "maximum": 599 },
+    "detail": { "type": "string" },
+    "instance": { "type": "string" },
+    "errorCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,6}-(VAL|ATN|ATZ|NFD|CON|RTL|DEP|TMO|INT)-[0-9]{4}$"
+    },
+    "category": {
+      "enum": ["VALIDATION", "AUTHENTICATION", "AUTHORIZATION", "NOT_FOUND", "CONFLICT",
+               "RATE_LIMITED", "DEPENDENCY", "TIMEOUT", "INTERNAL"]
+    },
+    "service": { "type": "string", "minLength": 1 },
+    "transactionId": { "type": "string", "pattern": "^[A-Za-z0-9._-]{1,64}$" },
+    "traceId": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "rootCause": {
+      "type": "object",
+      "required": ["service"],
+      "properties": {
+        "service": { "type": "string", "minLength": 1 },
+        "errorCode": {
+          "type": "string",
+          "pattern": "^[A-Z]{2,6}-(VAL|ATN|ATZ|NFD|CON|RTL|DEP|TMO|INT)-[0-9]{4}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "message"],
+        "properties": {
+          "field": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
